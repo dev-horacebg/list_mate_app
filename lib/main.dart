@@ -76,64 +76,23 @@ class GridWid extends StatelessWidget {
       child: Container(
           child: Center(
               child: DragTarget(
-            builder: (context, List candidateData, List rejected) {
+            builder: (context, List accepted, List rejected) {
+              if(accepted.isNotEmpty) {
+//                Scaffold.of(context)
+//                    .showSnackBar(SnackBar(content: Text('$t selected')));
+                HapticFeedback.mediumImpact();
+              }
               return Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(t, style: Theme.of(context).textTheme.headline),
+                child: Text(t,
+                    style: Theme.of(context).textTheme.headline.copyWith(
+                        color: accepted.isEmpty ? Colors.black : Colors.white)),
               );
             },
             onWillAccept: (data) => true,
             onAccept: (data) {
-              Scaffold.of(context)
-                  .showSnackBar(SnackBar(content: Text('$t selected')));
-              HapticFeedback.mediumImpact();
+
             },
           )),
           color: c));
-}
-
-class DragBox extends StatefulWidget {
-  final Offset initPos;
-  final Color itemColor;
-
-  DragBox(this.initPos, this.itemColor);
-
-  @override
-  _DragBoxState createState() => _DragBoxState();
-}
-
-class _DragBoxState extends State<DragBox> {
-  Offset position = Offset(0.0, 0.0);
-
-  @override
-  void initState() {
-    super.initState();
-    position = widget.initPos;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: position.dx,
-      top: position.dy,
-      child: Draggable(
-        data: widget.itemColor,
-        child: Container(
-          width: 100,
-          height: 100,
-          color: widget.itemColor,
-        ),
-        onDraggableCanceled: (velocity, offset) {
-          setState(() {
-            position = offset;
-          });
-        },
-        feedback: Container(
-          width: 120,
-          height: 120,
-          color: widget.itemColor.withOpacity(0.5),
-        ),
-      ),
-    );
-  }
 }
