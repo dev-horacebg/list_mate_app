@@ -77,22 +77,20 @@ class GridWid extends StatelessWidget {
           child: Center(
               child: DragTarget(
             builder: (context, List accepted, List rejected) {
-              if(accepted.isNotEmpty) {
-//                Scaffold.of(context)
-//                    .showSnackBar(SnackBar(content: Text('$t selected')));
-                HapticFeedback.mediumImpact();
-              }
               return Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Text(t,
                     style: Theme.of(context).textTheme.headline.copyWith(
                         color: accepted.isEmpty ? Colors.black : Colors.white)),
               );
             },
-            onWillAccept: (data) => true,
-            onAccept: (data) {
-
+            onWillAccept: (data) {
+              Scaffold.of(context)
+                  .showSnackBar(SnackBar(content: Text('$t selected')));
+              HapticFeedback.mediumImpact();
+              return true;
             },
+            onAccept: (data) {},
           )),
           color: c));
 }
