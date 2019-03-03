@@ -7,21 +7,19 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MaterialApp(home: Home());
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class Home extends StatefulWidget {
+  Home({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomeState createState() => _HomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return ScopedModel<ListModel>(
@@ -44,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
               ScopedModelDescendant<ListModel>(
-                builder: (ctx, ch, m) {
+                builder: (_, c, m) {
                 return Draggable(
                     onDragEnd: (end) {
                       m.resetLists();
@@ -65,7 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class GridWid extends StatelessWidget {
   final Item item;
-
   GridWid(this.item);
 
   @override
@@ -73,7 +70,7 @@ class GridWid extends StatelessWidget {
       flex: 1,
       child: Container(
           child: Center(child: ScopedModelDescendant<ListModel>(
-            builder: (ctx, ch, m) {
+            builder: (_, c, m) {
               return DragTarget(
                 builder: (context, List accepted, List rejected) {
                   return Padding(
@@ -103,33 +100,28 @@ enum Direction { left, right }
 
 class ItemColumn extends StatelessWidget {
   final Direction d;
-
   ItemColumn(this.d);
 
   @override
-  Widget build(BuildContext context) {
-    return ScopedModelDescendant<ListModel>(builder: (ctx, ch, m) {
-      List<Item> items = m.get(d);
+  Widget build(BuildContext context) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+      var items = m.get(d);
 
       return Column(
-        children: List<Widget>.generate(items.length, (index) {
-          return GridWid(items[index]);
-        }),
+        children: List<Widget>.generate(items.length, (i) {
+          return GridWid(items[i]);
+        })
       );
     });
-  }
 }
 
 class Item {
   final String t;
   final MaterialColor c;
-
   Item(this.t, this.c);
 }
 
 class ListModel extends Model {
   var _selected;
-
   static List<Item> defaultLeft = [Item("Coffee", Colors.blue), Item("Snacks", Colors.red)];
   static List<Item> defaultRight = [Item("Tea", Colors.amber), Item("Other", Colors.teal)];
 
