@@ -28,22 +28,22 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Stack(
           alignment: AlignmentDirectional.center,
           children: <Widget>[
-            Column(
+            Row(
               children: <Widget>[
                 Expanded(
                   flex: 1,
-                  child: Row(
+                  child: Column(
                     children: <Widget>[
-                      GridWid("Tea", Colors.amber),
-                      GridWid("Coffee", Colors.blue)
+                      GridWid("Coffee", Colors.blue),
+                      GridWid("Snacks", Colors.red)
                     ],
                   ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: Row(
+                  child: Column(
                     children: <Widget>[
-                      GridWid("Snacks", Colors.red),
+                      GridWid("Tea", Colors.amber),
                       GridWid("Other", Colors.teal)
                     ],
                   ),
