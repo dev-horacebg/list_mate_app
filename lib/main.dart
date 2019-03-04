@@ -122,11 +122,11 @@ class Item {
 
 class ListModel extends Model {
   var _selected;
-  static List<Item> defaultLeft = [Item("Coffee", Colors.blue), Item("Snacks", Colors.red)];
-  static List<Item> defaultRight = [Item("Tea", Colors.amber), Item("Other", Colors.teal)];
+  static var defaultLeft = [Item("Coffee", Colors.blue), Item("Snacks", Colors.red)];
+  static var defaultRight = [Item("Tea", Colors.amber), Item("Other", Colors.teal)];
 
-  List<Item> left = defaultLeft;
-  List<Item> right = defaultRight;
+  var left = defaultLeft;
+  var right = defaultRight;
 
   void updateSelected(selected) {
     this._selected = selected;
