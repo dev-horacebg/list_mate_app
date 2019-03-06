@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:list_mate/model_data.dart';
+import 'package:list_mate/data.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 void main() => runApp(MyApp());
@@ -30,52 +29,48 @@ class _HomeState extends State<Home> {
             return ScopedModel<ListModel>(
               model: model,
               child: Scaffold(
-                body: Center(
-                  child: Stack(
-                    alignment: AlignmentDirectional.center,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: ItemColumn(Dir.left),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: ItemColumn(Dir.right),
-                          ),
-                        ],
-                      ),
-                      ScopedModelDescendant<ListModel>(
-                        builder: (_, c, m) {
-                          return Draggable(
-                              onDragEnd: (end) {
-                                m.resetLists();
-                              },
-                              child: FloatingActionButton(
-                                  onPressed: () {},
-                                  backgroundColor: Colors.deepOrange),
-                              feedback: FloatingActionButton(
-                                  onPressed: () {},
-                                  backgroundColor: Colors.white),
-                              childWhenDragging: Opacity(opacity: 0));
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              ),
+                body: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children:[
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: ItemColumn(Dir.left),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: ItemColumn(Dir.right),
+                        ),
+                      ],
+                    ),
+                    ScopedModelDescendant<ListModel>(
+                      builder: (_, c, m) {
+                        return Draggable(
+                            onDragEnd: (end) {
+                              m.resetLists();
+                            },
+                            child: FloatingActionButton(
+                                onPressed: () {},
+                                backgroundColor: Colors.deepOrange),
+                            feedback: FloatingActionButton(
+                                onPressed: () {},
+                                backgroundColor: Colors.white),
+                            childWhenDragging: Opacity(opacity: 0));
+                      }
+                    )
+                  ]
+                )
+              )
             );
           } else {
             return Container(color: Colors.blue);
-          }
-        });
+          }});
   }
 }
 
 class ItemWgt extends StatelessWidget {
-  final Item i;
-  final Dir dir;
+  final Item i; final Dir dir;
   ItemWgt(this.i, this.dir);
 
   @override
@@ -110,7 +105,6 @@ enum Dir { left, right }
 
 class ItemColumn extends StatelessWidget {
   final Dir d;
-
   ItemColumn(this.d);
 
   @override
@@ -134,7 +128,7 @@ class ListModel extends Model {
     right = defaultRight = [menu.items[2], menu.items[3]];
   }
 
-  void updateSelected(Item selected, dir) {
+  void updateSelected(selected, dir) {
     this._selected = selected;
     if (dir == Dir.left) {
       right = selected.items;
@@ -143,7 +137,7 @@ class ListModel extends Model {
     }
     notifyListeners();
   }
-  List<Item> get(dir) => dir == Dir.left ? left : right;
+  List get(dir) => dir == Dir.left ? left : right;
   void resetLists() {
     left = defaultLeft;
     right = defaultRight;

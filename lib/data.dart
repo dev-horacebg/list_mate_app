@@ -9,23 +9,16 @@ class Menu {
     }
   }
 }
-
 class Item {
-  String name;
-  int colour;
-  List<Item> items;
+  String name; int colour; List<Item> items;
+
   Item.fromJson(json) {
     name = json['name'];
-    var cl = json['colour'];
-    if(cl != null) {
-      colour = int.parse('0xFF${json['colour']}');
-    } else {
-      colour = 0x000000;
-    }
+    colour = json['colour'] != null ? int.parse('0xFF${json['colour']}') : 0x000000;
     if (json['items'] != null) {
-      items = new List<Item>();
+      items = List<Item>();
       json['items'].forEach((v) {
-        items.add(new Item.fromJson(v));
+        items.add(Item.fromJson(v));
       });
     }
   }
