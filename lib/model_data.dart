@@ -1,9 +1,6 @@
 class Menu {
   List<Item> items;
-
-  Menu({this.items});
-
-  Menu.fromJson(Map<String, dynamic> json) {
+  Menu.fromJson(json) {
     if (json['items'] != null) {
       items = new List<Item>();
       json['items'].forEach((v) {
@@ -17,10 +14,7 @@ class Item {
   String name;
   int colour;
   List<Item> items;
-
-  Item({this.name, this.colour, this.items});
-
-  Item.fromJson(Map<String, dynamic> json) {
+  Item.fromJson(json) {
     name = json['name'];
     var cl = json['colour'];
     if(cl != null) {
