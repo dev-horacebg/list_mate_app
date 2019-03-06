@@ -130,11 +130,8 @@ class ListModel extends Model {
 
   void init(mnu) {
     this.menu = mnu;
-    defaultLeft = [menu.items[0], menu.items[1]];
-    defaultRight = [menu.items[2], menu.items[3]];
-
-    left = defaultLeft;
-    right = defaultRight;
+    left = defaultLeft = [menu.items[0], menu.items[1]];
+    right = defaultRight = [menu.items[2], menu.items[3]];
   }
 
   void updateSelected(Item selected, dir) {
