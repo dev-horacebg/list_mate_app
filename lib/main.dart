@@ -1,91 +1,101 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:list_mate/model_data.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: Home());
-  }
+  Widget build(ctx) => MaterialApp(home: Home());
 }
 
 class Home extends StatefulWidget {
-  Home({Key key, this.title}) : super(key: key);
-  final String title;
-
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   @override
-  Widget build(BuildContext context) {
-    return ScopedModel<ListModel>(
-      model: ListModel(),
-      child: Scaffold(
-        body: Center(
-          child: Stack(
-            alignment: AlignmentDirectional.center,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: ItemColumn(Direction.left),
+  Widget build(ctx) {
+    return FutureBuilder(
+        future: rootBundle.loadString('assets/data.json'),
+        builder: (context, snp) {
+          if (snp.connectionState == ConnectionState.done) {
+            var model = ListModel();
+            model.init(Menu.fromJson(json.decode(snp.data)));
+            return ScopedModel<ListModel>(
+              model: model,
+              child: Scaffold(
+                body: Center(
+                  child: Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: ItemColumn(Dir.left),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: ItemColumn(Dir.right),
+                          ),
+                        ],
+                      ),
+                      ScopedModelDescendant<ListModel>(
+                        builder: (_, c, m) {
+                          return Draggable(
+                              onDragEnd: (end) {
+                                m.resetLists();
+                              },
+                              child: FloatingActionButton(
+                                  onPressed: () {},
+                                  backgroundColor: Colors.deepOrange),
+                              feedback: FloatingActionButton(
+                                  onPressed: () {},
+                                  backgroundColor: Colors.white),
+                              childWhenDragging: Opacity(opacity: 0));
+                        },
+                      )
+                    ],
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: ItemColumn(Direction.right),
-                  ),
-                ],
+                ),
               ),
-              ScopedModelDescendant<ListModel>(
-                builder: (_, c, m) {
-                return Draggable(
-                    onDragEnd: (end) {
-                      m.resetLists();
-                    },
-                    child: FloatingActionButton(
-                        onPressed: () {}, backgroundColor: Colors.deepOrange),
-                    feedback: FloatingActionButton(
-                        onPressed: () {}, backgroundColor: Colors.white),
-                    childWhenDragging: Opacity(opacity: 0));},
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+            );
+          } else {
+            return Container(color: Colors.blue);
+          }
+        });
   }
 }
 
-class GridWid extends StatelessWidget {
-  final Item item;
-  GridWid(this.item);
+class ItemWgt extends StatelessWidget {
+  final Item i;
+  final Dir dir;
+  ItemWgt(this.i, this.dir);
 
   @override
-  Widget build(BuildContext context) => Expanded(
+  Widget build(ctx) => Expanded(
       flex: 1,
       child: Container(
           child: Center(child: ScopedModelDescendant<ListModel>(
             builder: (_, c, m) {
               return DragTarget(
-                builder: (context, List accepted, List rejected) {
+                builder: (cx, accepted, rejected) {
                   return Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(item.t,
-                        style: Theme.of(context).textTheme.headline.copyWith(
+                    padding: EdgeInsets.all(16),
+                    child: Text(i.name,
+                        style: Theme.of(cx).textTheme.headline.copyWith(
                             color: accepted.isEmpty
                                 ? Colors.black
-                                : Colors.white)),
-                  );
+                                : Colors.white)));
                 },
                 onWillAccept: (data) {
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('${item.t} selected')));
-                  m.updateSelected(item.t);
+                  m.updateSelected(i, dir);
                   HapticFeedback.mediumImpact();
                   return true;
                 },
@@ -93,55 +103,50 @@ class GridWid extends StatelessWidget {
               );
             },
           )),
-          color: item.c));
+          color: Color(i.colour)));
 }
 
-enum Direction { left, right }
+enum Dir { left, right }
 
 class ItemColumn extends StatelessWidget {
-  final Direction d;
+  final Dir d;
+
   ItemColumn(this.d);
 
   @override
-  Widget build(BuildContext context) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
-      var items = m.get(d);
-
-      return Column(
-        children: List<Widget>.generate(items.length, (i) {
-          return GridWid(items[i]);
-        })
-      );
-    });
-}
-
-class Item {
-  final String t;
-  final MaterialColor c;
-  Item(this.t, this.c);
+  Widget build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+        var items = m.get(d);
+        return Column(
+            children: List.generate(items.length, (i) {
+          return ItemWgt(items[i], d);
+        }));
+      });
 }
 
 class ListModel extends Model {
-  var _selected;
-  static var defaultLeft = [Item("Coffee", Colors.blue), Item("Snacks", Colors.red)];
-  static var defaultRight = [Item("Tea", Colors.amber), Item("Other", Colors.teal)];
+  Menu menu;
+  var _selected, defaultLeft, defaultRight, currentOrder, left, right, currentDir;
+  var order = [];
 
-  var left = defaultLeft;
-  var right = defaultRight;
+  void init(mnu) {
+    this.menu = mnu;
+    defaultLeft = [menu.items[0], menu.items[1]];
+    defaultRight = [menu.items[2], menu.items[3]];
 
-  void updateSelected(selected) {
+    left = defaultLeft;
+    right = defaultRight;
+  }
+
+  void updateSelected(Item selected, dir) {
     this._selected = selected;
-    if (selected == "Tea") {
-      left = [
-        Item("Latte", Colors.brown),
-        Item("Espresso", Colors.pink),
-        Item("Mocha", Colors.yellow)
-      ];
+    if (dir == Dir.left) {
+      right = selected.items;
+    } else {
+      left = selected.items;
     }
     notifyListeners();
   }
-
-  List<Item> get(Direction dir) => dir == Direction.left ? left : right;
-
+  List<Item> get(dir) => dir == Dir.left ? left : right;
   void resetLists() {
     left = defaultLeft;
     right = defaultRight;
