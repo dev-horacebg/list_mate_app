@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -43,12 +44,15 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+                  var count = m.count();
                   return Draggable(
                       onDragEnd: (end) {
                         m.resetLists();
                       },
                       child: FloatingActionButton(
-                          onPressed: () {}, backgroundColor: Colors.deepOrange),
+                          child: count == 0 ? null : Text('$count'),
+                          onPressed: () {},
+                          backgroundColor: Colors.deepOrange),
                       feedback: FloatingActionButton(
                           onPressed: () {}, backgroundColor: Colors.white),
                       childWhenDragging: Opacity(opacity: 0));
@@ -114,19 +118,23 @@ class ItemColumn extends StatelessWidget {
 }
 
 class ListModel extends Model {
-  Menu menu;
-  var _selected, defaultLeft, defaultRight, currentOrder, left, right, currentDir;
-  var order = [];
-  var itemsOrdered = [];
+  var defaultLeft,
+      defaultRight,
+      currentOrder,
+      left,
+      right,
+      currentDir,
+      level,
+      order = [];
+  var itemsOrdered = LinkedHashMap<String, List>();
+  var categories = LinkedHashSet();
 
-  void init(mnu) {
-    this.menu = mnu;
+  void init(menu) {
     left = defaultLeft = [menu.items[0], menu.items[1]];
     right = defaultRight = [menu.items[2], menu.items[3]];
   }
 
   void updateSelected(selected, dir) {
-    this._selected = selected;
     order.add(selected.name);
     var items = selected.items;
     if (items != null) {
@@ -138,7 +146,6 @@ class ListModel extends Model {
     } else {
       // TODO: Show release to add message!
     }
-
     notifyListeners();
   }
 
@@ -151,6 +158,23 @@ class ListModel extends Model {
   }
 
   void addToList() {
+    var category = order[0];
+    if (itemsOrdered.isNotEmpty && itemsOrdered[category] != null) {
+      List itemsOrdered2 = itemsOrdered[category];
+      itemsOrdered2.add(order.sublist(1, order.length).join(", "));
+      itemsOrdered[category] = itemsOrdered2;
+    } else {
+      itemsOrdered[category] = [order.sublist(1, order.length).join(", ")];
+    }
+    order = [];
+    print(itemsOrdered);
+  }
 
+  count() {
+    var count = 0;
+    itemsOrdered.forEach((_, list) {
+      count += list.length;
+    });
+    return count;
   }
 }
