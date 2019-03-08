@@ -106,7 +106,7 @@ class ItemColumn extends StatelessWidget {
 }
 
 class ListModel extends Model {
-  var defLeft, defRight, currentOrder, left, right, currentDir, level, order = [];
+  var defLeft, defRight, currentOrder, left, right, currentDir, lastSelected, order = [];
   var itemsOrdered = LinkedHashMap();
 
   init(menu) {
@@ -115,16 +115,21 @@ class ListModel extends Model {
   }
 
   update(selected, dir) {
-    order.add(selected.name);
-    var items = selected.items;
-    if (items != null) {
-      if (dir == Dir.L) {
-        right = items;
-      } else {
-        left = items;
+    if (selected != lastSelected) {
+      lastSelected = selected;
+      order.add(selected.name);
+      var items = selected.items;
+      if (items != null) {
+        if (dir == Dir.L) {
+          right = items;
+          left = [selected];
+        } else {
+          left = items;
+          right = [selected];
+        }
       }
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   get(dir) => dir == Dir.L ? left : right;
