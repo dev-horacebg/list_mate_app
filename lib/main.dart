@@ -149,9 +149,7 @@ class ListModel extends Model {
 
   count() {
     var c = 0;
-    itemsOrdered.forEach((_, l) {
-      c += l.length;
-    });
+    itemsOrdered.forEach((_, l) => c += l.length);
     return c;
   }
 }
