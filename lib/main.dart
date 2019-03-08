@@ -21,7 +21,7 @@ class _HomeState extends State<Home> {
       builder: (cx, snp) {
         if (snp.connectionState == ConnectionState.done) {
           var model = ListModel();
-          model.init(Menu.fromJson(json.decode(snp.data)));
+          model.init(Menu.from(json.decode(snp.data)));
           return ScopedModel<ListModel>(
               model: model,
               child: Scaffold(
@@ -29,14 +29,8 @@ class _HomeState extends State<Home> {
                       Stack(alignment: AlignmentDirectional.center, children: [
                 Row(
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: ItemColumn(Dir.L),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: ItemColumn(Dir.R),
-                    ),
+                    ItemColumn(Dir.L),
+                    ItemColumn(Dir.R),
                   ],
                 ),
                 ScopedModelDescendant<ListModel>(builder: (_, c, m) {
@@ -47,15 +41,14 @@ class _HomeState extends State<Home> {
                       },
                       child: FloatingActionButton(
                           child: count == 0 ? null : Text('$count'),
-                          onPressed: () {},
-                          backgroundColor: Colors.deepOrange),
+                          onPressed: () {}),
                       feedback: FloatingActionButton(
-                          onPressed: () {}, backgroundColor: Colors.white),
+                          onPressed: () {}),
                       childWhenDragging: Opacity(opacity: 0));
                 })
               ])));
         } else {
-          return Container(color: Colors.blue);
+          return Container();
         }
       });
 }
@@ -72,11 +65,11 @@ class ItemWgt extends StatelessWidget {
           child: Center(child: ScopedModelDescendant<ListModel>(
             builder: (_, c, m) {
               return DragTarget(
-                builder: (cx, ac, re) {
+                builder: (ctx, ac, re) {
                   return Padding(
                       padding: EdgeInsets.all(16),
                       child: Text(i.name,
-                          style: Theme.of(cx).textTheme.headline.copyWith(
+                          style: Theme.of(ctx).textTheme.headline.copyWith(
                               color: ac.isEmpty
                                   ? Colors.black
                                   : Colors.white)));
@@ -87,7 +80,7 @@ class ItemWgt extends StatelessWidget {
                   return true;
                 },
                 onAccept: (data) {
-                  m.addToList();
+                  m.accept();
                 }
               );
             }
@@ -102,10 +95,13 @@ class ItemColumn extends StatelessWidget {
   ItemColumn(this.d);
   @override build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
         var items = m.get(d);
-        return Column(
-            children: List.generate(items.length, (i) {
-          return ItemWgt(items[i], d);
-        }));
+        return Expanded(
+          flex: 1,
+          child: Column(
+              children: List.generate(items.length, (i) {
+            return ItemWgt(items[i], d);
+          })),
+        );
       });
 }
 
@@ -113,12 +109,12 @@ class ListModel extends Model {
   var defLeft, defRight, currentOrder, left, right, currentDir, level, order = [];
   var itemsOrdered = LinkedHashMap();
 
-  void init(menu) {
+  init(menu) {
     left = defLeft = [menu.items[0], menu.items[1]];
     right = defRight = [menu.items[2], menu.items[3]];
   }
 
-  void update(selected, dir) {
+  update(selected, dir) {
     order.add(selected.name);
     var items = selected.items;
     if (items != null) {
@@ -139,7 +135,7 @@ class ListModel extends Model {
     notifyListeners();
   }
 
-  addToList() {
+  accept() {
     var cat = order[0];
     var list = order.sublist(1, order.length).join(", ");
     if (itemsOrdered.isNotEmpty && itemsOrdered[cat] != null) {
