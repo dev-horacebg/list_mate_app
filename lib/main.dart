@@ -6,23 +6,19 @@ import 'package:flutter/services.dart';
 import 'package:list_mate/data.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-void main() => runApp(MyApp());
-
+main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
-  @override
-  build(ctx) => MaterialApp(home: Home());
+  @override build(ctx) => MaterialApp(home: Home());
 }
 
 class Home extends StatefulWidget {
-  @override
-  _HomeState createState() => _HomeState();
+  @override createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  @override
-  build(ctx) => FutureBuilder(
-      future: rootBundle.loadString('assets/data.json'),
-      builder: (context, snp) {
+  @override build(ctx) => FutureBuilder(
+      future: rootBundle.loadString('assets/d.json'),
+      builder: (cx, snp) {
         if (snp.connectionState == ConnectionState.done) {
           var model = ListModel();
           model.init(Menu.fromJson(json.decode(snp.data)));
@@ -35,11 +31,11 @@ class _HomeState extends State<Home> {
                   children: [
                     Expanded(
                       flex: 1,
-                      child: ItemColumn(Dir.left),
+                      child: ItemColumn(Dir.L),
                     ),
                     Expanded(
                       flex: 1,
-                      child: ItemColumn(Dir.right),
+                      child: ItemColumn(Dir.R),
                     ),
                   ],
                 ),
@@ -47,7 +43,7 @@ class _HomeState extends State<Home> {
                   var count = m.count();
                   return Draggable(
                       onDragEnd: (end) {
-                        m.resetLists();
+                        m.reset();
                       },
                       child: FloatingActionButton(
                           child: count == 0 ? null : Text('$count'),
@@ -70,45 +66,41 @@ class ItemWgt extends StatelessWidget {
 
   ItemWgt(this.i, this.dir);
 
-  @override
-  build(ctx) => Expanded(
+  @override build(ctx) => Expanded(
       flex: 1,
       child: Container(
           child: Center(child: ScopedModelDescendant<ListModel>(
             builder: (_, c, m) {
               return DragTarget(
-                builder: (cx, accepted, rejected) {
+                builder: (cx, ac, re) {
                   return Padding(
                       padding: EdgeInsets.all(16),
                       child: Text(i.name,
                           style: Theme.of(cx).textTheme.headline.copyWith(
-                              color: accepted.isEmpty
+                              color: ac.isEmpty
                                   ? Colors.black
                                   : Colors.white)));
                 },
                 onWillAccept: (data) {
-                  m.updateSelected(i, dir);
+                  m.update(i, dir);
                   HapticFeedback.mediumImpact();
                   return true;
                 },
                 onAccept: (data) {
                   m.addToList();
-                },
+                }
               );
-            },
+            }
           )),
           color: Color(i.colour)));
 }
 
-enum Dir { left, right }
+enum Dir{L,R}
 
 class ItemColumn extends StatelessWidget {
   final Dir d;
-
   ItemColumn(this.d);
-
-  @override
-  Widget build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+  @override build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
         var items = m.get(d);
         return Column(
             children: List.generate(items.length, (i) {
@@ -118,63 +110,52 @@ class ItemColumn extends StatelessWidget {
 }
 
 class ListModel extends Model {
-  var defaultLeft,
-      defaultRight,
-      currentOrder,
-      left,
-      right,
-      currentDir,
-      level,
-      order = [];
-  var itemsOrdered = LinkedHashMap<String, List>();
-  var categories = LinkedHashSet();
+  var defLeft, defRight, currentOrder, left, right, currentDir, level, order = [];
+  var itemsOrdered = LinkedHashMap();
 
   void init(menu) {
-    left = defaultLeft = [menu.items[0], menu.items[1]];
-    right = defaultRight = [menu.items[2], menu.items[3]];
+    left = defLeft = [menu.items[0], menu.items[1]];
+    right = defRight = [menu.items[2], menu.items[3]];
   }
 
-  void updateSelected(selected, dir) {
+  void update(selected, dir) {
     order.add(selected.name);
     var items = selected.items;
     if (items != null) {
-      if (dir == Dir.left) {
+      if (dir == Dir.L) {
         right = items;
       } else {
         left = items;
       }
-    } else {
-      // TODO: Show release to add message!
     }
     notifyListeners();
   }
 
-  List get(dir) => dir == Dir.left ? left : right;
+  get(dir) => dir == Dir.L ? left : right;
 
-  void resetLists() {
-    left = defaultLeft;
-    right = defaultRight;
+  reset() {
+    left = defLeft;
+    right = defRight;
     notifyListeners();
   }
 
-  void addToList() {
-    var category = order[0];
-    if (itemsOrdered.isNotEmpty && itemsOrdered[category] != null) {
-      List itemsOrdered2 = itemsOrdered[category];
-      itemsOrdered2.add(order.sublist(1, order.length).join(", "));
-      itemsOrdered[category] = itemsOrdered2;
+  addToList() {
+    var cat = order[0];
+    var list = order.sublist(1, order.length).join(", ");
+    if (itemsOrdered.isNotEmpty && itemsOrdered[cat] != null) {
+      itemsOrdered[cat].add(list);
     } else {
-      itemsOrdered[category] = [order.sublist(1, order.length).join(", ")];
+      itemsOrdered[cat] = [list];
     }
     order = [];
     print(itemsOrdered);
   }
 
   count() {
-    var count = 0;
-    itemsOrdered.forEach((_, list) {
-      count += list.length;
+    var c = 0;
+    itemsOrdered.forEach((_, l) {
+      c += l.length;
     });
-    return count;
+    return c;
   }
 }
