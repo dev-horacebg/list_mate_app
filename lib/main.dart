@@ -39,9 +39,15 @@ class _HomeState extends State<Home> {
                       onDragEnd: (end) {
                         m.reset();
                       },
+//                      data: m.lastSelected,
                       child: FloatingActionButton(
                           child: count == 0 ? null : Text('$count'),
-                          onPressed: () {}),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => OrderW(m.itemsOrdered)),
+                          );
+                        },),
                       feedback: FloatingActionButton(
                           onPressed: () {}),
                       childWhenDragging: Opacity(opacity: 0));
@@ -75,8 +81,9 @@ class ItemWgt extends StatelessWidget {
                                   : Colors.white)));
                 },
                 onWillAccept: (data) {
-                  m.update(i, dir);
-                  HapticFeedback.mediumImpact();
+                    m.update(i, dir);
+                    HapticFeedback.mediumImpact();
+                    print("Selected ${i.name}");
                   return true;
                 },
                 onAccept: (data) {
@@ -106,7 +113,7 @@ class ItemColumn extends StatelessWidget {
 }
 
 class ListModel extends Model {
-  var defLeft, defRight, currentOrder, left, right, currentDir, lastSelected, order = [];
+  var defLeft, defRight, left, right, lastSelected, currentFloor = 0, order = [];
   var itemsOrdered = LinkedHashMap();
 
   init(menu) {
@@ -156,5 +163,35 @@ class ListModel extends Model {
     var c = 0;
     itemsOrdered.forEach((_, l) => c += l.length);
     return c;
+  }
+}
+
+class OrderW extends StatelessWidget {
+
+  final LinkedHashMap items;
+
+  OrderW(this.items);
+
+  @override
+  Widget build(BuildContext context) {
+    var keys = items.keys.toList();
+    return Scaffold(
+      appBar: AppBar(title: Text('My stuff')),
+      body: Column(
+        children: List.generate(keys.length, (i) {
+          var item = items[keys[i]];
+          return Column(
+            children: <Widget>[
+              Container(
+                child: Text(keys[i]),
+              ),
+              ListView(
+                shrinkWrap: true,
+                children: List.generate(item.length, (x) {
+                  return Text(item[x]);
+                }))]
+          );
+        }),
+      ));
   }
 }
