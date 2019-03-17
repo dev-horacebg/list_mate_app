@@ -45,7 +45,7 @@ class _HomeState extends State<Home> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => OrderW(m.itemsOrdered)),
+                            MaterialPageRoute(builder: (context) => OrderW(m.order)),
                           );
                         },),
                       feedback: FloatingActionButton(
@@ -88,7 +88,10 @@ class ItemWgt extends StatelessWidget {
                 },
                 onAccept: (data) {
                   m.accept();
-                }
+                },
+                onLeave: (data) {
+                  m.accept();
+              },
               );
             }
           )),
@@ -113,8 +116,10 @@ class ItemColumn extends StatelessWidget {
 }
 
 class ListModel extends Model {
-  var defLeft, defRight, left, right, lastSelected, currentFloor = 0, order = [];
-  var itemsOrdered = LinkedHashMap();
+  var defLeft, defRight, left, right, lastSelected, currentFloor = 0;
+  var order = LinkedHashSet();
+  var itemsOrdered = [];
+  var iOrdered = [];
 
   init(menu) {
     left = defLeft = [menu.items[0], menu.items[1]];
@@ -122,7 +127,7 @@ class ListModel extends Model {
   }
 
   update(selected, dir) {
-    if (selected != lastSelected) {
+//    if (selected != lastSelected) {
       lastSelected = selected;
       order.add(selected.name);
       var items = selected.items;
@@ -136,7 +141,7 @@ class ListModel extends Model {
         }
       }
       notifyListeners();
-    }
+//    }
   }
 
   get(dir) => dir == Dir.L ? left : right;
@@ -148,50 +153,34 @@ class ListModel extends Model {
   }
 
   accept() {
-    var cat = order[0];
-    var list = order.sublist(1, order.length).join(", ");
-    if (itemsOrdered.isNotEmpty && itemsOrdered[cat] != null) {
-      itemsOrdered[cat].add(list);
-    } else {
-      itemsOrdered[cat] = [list];
+    if (order.isNotEmpty && order.length > 1) {
+      String list = order.toList().sublist(1, order.length).join(", ");
+
+      itemsOrdered.add(list);
+
+      order = LinkedHashSet();
+      print(itemsOrdered);
     }
-    order = [];
-    print(itemsOrdered);
   }
 
-  count() {
-    var c = 0;
-    itemsOrdered.forEach((_, l) => c += l.length);
-    return c;
-  }
+  count() => itemsOrdered.length;
 }
 
 class OrderW extends StatelessWidget {
 
-  final LinkedHashMap items;
+  final LinkedHashSet items;
 
   OrderW(this.items);
 
   @override
   Widget build(BuildContext context) {
-    var keys = items.keys.toList();
+    var keys = items.toList();
     return Scaffold(
       appBar: AppBar(title: Text('My stuff')),
-      body: Column(
-        children: List.generate(keys.length, (i) {
-          var item = items[keys[i]];
-          return Column(
-            children: <Widget>[
-              Container(
-                child: Text(keys[i]),
-              ),
-              ListView(
-                shrinkWrap: true,
-                children: List.generate(item.length, (x) {
-                  return Text(item[x]);
-                }))]
-          );
-        }),
-      ));
+      body: ListView(
+          shrinkWrap: true,
+          children: List.generate(items.length, (x) {
+            return Text(keys[x]);
+          })));
   }
 }
