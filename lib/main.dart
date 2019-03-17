@@ -1,150 +1,186 @@
+import 'dart:collection';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:list_mate/data.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-void main() => runApp(MyApp());
-
+main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: Home());
-  }
+  @override build(ctx) => MaterialApp(home: Home());
 }
 
 class Home extends StatefulWidget {
-  Home({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _HomeState createState() => _HomeState();
+  @override createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  @override
-  Widget build(BuildContext context) {
-    return ScopedModel<ListModel>(
-      model: ListModel(),
-      child: Scaffold(
-        body: Center(
-          child: Stack(
-            alignment: AlignmentDirectional.center,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: ItemColumn(Direction.left),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: ItemColumn(Direction.right),
-                  ),
-                ],
-              ),
-              ScopedModelDescendant<ListModel>(
-                builder: (_, c, m) {
-                return Draggable(
-                    onDragEnd: (end) {
-                      m.resetLists();
-                    },
-                    child: FloatingActionButton(
-                        onPressed: () {}, backgroundColor: Colors.deepOrange),
-                    feedback: FloatingActionButton(
-                        onPressed: () {}, backgroundColor: Colors.white),
-                    childWhenDragging: Opacity(opacity: 0));},
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  @override build(ctx) => FutureBuilder(
+      future: rootBundle.loadString('assets/d.json'),
+      builder: (cx, snp) {
+        if (snp.connectionState == ConnectionState.done) {
+          var model = ListModel();
+          model.init(Menu.from(json.decode(snp.data)));
+          return ScopedModel<ListModel>(
+              model: model,
+              child: Scaffold(
+                  body:
+                      Stack(alignment: AlignmentDirectional.center, children: [
+                Row(
+                  children: [
+                    ItemColumn(Dir.L),
+                    ItemColumn(Dir.R),
+                  ],
+                ),
+                ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+                  var count = m.count();
+                  return Draggable(
+                      onDragEnd: (end) {
+                        m.reset();
+                      },
+//                      data: m.lastSelected,
+                      child: FloatingActionButton(
+                          child: count == 0 ? null : Text('$count'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => OrderW(m.order)),
+                          );
+                        },),
+                      feedback: FloatingActionButton(
+                          onPressed: () {}),
+                      childWhenDragging: Opacity(opacity: 0));
+                })
+              ])));
+        } else {
+          return Container();
+        }
+      });
 }
 
-class GridWid extends StatelessWidget {
-  final Item item;
-  GridWid(this.item);
+class ItemWgt extends StatelessWidget {
+  final Item i;
+  final Dir dir;
 
-  @override
-  Widget build(BuildContext context) => Expanded(
+  ItemWgt(this.i, this.dir);
+
+  @override build(ctx) => Expanded(
       flex: 1,
       child: Container(
           child: Center(child: ScopedModelDescendant<ListModel>(
             builder: (_, c, m) {
               return DragTarget(
-                builder: (context, List accepted, List rejected) {
+                builder: (ctx, ac, re) {
                   return Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(item.t,
-                        style: Theme.of(context).textTheme.headline.copyWith(
-                            color: accepted.isEmpty
-                                ? Colors.black
-                                : Colors.white)),
-                  );
+                      padding: EdgeInsets.all(16),
+                      child: Text(i.name,
+                          style: Theme.of(ctx).textTheme.headline.copyWith(
+                              color: ac.isEmpty
+                                  ? Colors.black
+                                  : Colors.white)));
                 },
                 onWillAccept: (data) {
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('${item.t} selected')));
-                  m.updateSelected(item.t);
-                  HapticFeedback.mediumImpact();
+                    m.update(i, dir);
+                    HapticFeedback.mediumImpact();
+                    print("Selected ${i.name}");
                   return true;
                 },
-                onAccept: (data) {},
+                onAccept: (data) {
+                  m.accept();
+                },
+                onLeave: (data) {
+                  m.accept();
+              },
               );
-            },
+            }
           )),
-          color: item.c));
+          color: Color(i.colour)));
 }
 
-enum Direction { left, right }
+enum Dir{L,R}
 
 class ItemColumn extends StatelessWidget {
-  final Direction d;
+  final Dir d;
   ItemColumn(this.d);
-
-  @override
-  Widget build(BuildContext context) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
-      var items = m.get(d);
-
-      return Column(
-        children: List<Widget>.generate(items.length, (i) {
-          return GridWid(items[i]);
-        })
-      );
-    });
-}
-
-class Item {
-  final String t;
-  final MaterialColor c;
-  Item(this.t, this.c);
+  @override build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+        var items = m.get(d);
+        return Expanded(
+          flex: 1,
+          child: Column(
+              children: List.generate(items.length, (i) {
+            return ItemWgt(items[i], d);
+          })),
+        );
+      });
 }
 
 class ListModel extends Model {
-  var _selected;
-  static var defaultLeft = [Item("Coffee", Colors.blue), Item("Snacks", Colors.red)];
-  static var defaultRight = [Item("Tea", Colors.amber), Item("Other", Colors.teal)];
+  var defLeft, defRight, left, right, lastSelected, currentFloor = 0;
+  var order = LinkedHashSet();
+  var itemsOrdered = [];
+  var iOrdered = [];
 
-  var left = defaultLeft;
-  var right = defaultRight;
+  init(menu) {
+    left = defLeft = [menu.items[0], menu.items[1]];
+    right = defRight = [menu.items[2], menu.items[3]];
+  }
 
-  void updateSelected(selected) {
-    this._selected = selected;
-    if (selected == "Tea") {
-      left = [
-        Item("Latte", Colors.brown),
-        Item("Espresso", Colors.pink),
-        Item("Mocha", Colors.yellow)
-      ];
-    }
+  update(selected, dir) {
+//    if (selected != lastSelected) {
+      lastSelected = selected;
+      order.add(selected.name);
+      var items = selected.items;
+      if (items != null) {
+        if (dir == Dir.L) {
+          right = items;
+          left = [selected];
+        } else {
+          left = items;
+          right = [selected];
+        }
+      }
+      notifyListeners();
+//    }
+  }
+
+  get(dir) => dir == Dir.L ? left : right;
+
+  reset() {
+    left = defLeft;
+    right = defRight;
     notifyListeners();
   }
 
-  List<Item> get(Direction dir) => dir == Direction.left ? left : right;
+  accept() {
+    if (order.isNotEmpty && order.length > 1) {
+      String list = order.toList().sublist(1, order.length).join(", ");
 
-  void resetLists() {
-    left = defaultLeft;
-    right = defaultRight;
-    notifyListeners();
+      itemsOrdered.add(list);
+
+      order = LinkedHashSet();
+      print(itemsOrdered);
+    }
+  }
+
+  count() => itemsOrdered.length;
+}
+
+class OrderW extends StatelessWidget {
+
+  final LinkedHashSet items;
+
+  OrderW(this.items);
+
+  @override
+  Widget build(BuildContext context) {
+    var keys = items.toList();
+    return Scaffold(
+      appBar: AppBar(title: Text('My stuff')),
+      body: ListView(
+          shrinkWrap: true,
+          children: List.generate(items.length, (x) {
+            return Text(keys[x]);
+          })));
   }
 }
