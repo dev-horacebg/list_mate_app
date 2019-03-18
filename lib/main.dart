@@ -38,7 +38,8 @@ class _HomeState extends State<Home> {
               model: model,
               child: Scaffold(
                   body:
-                      Stack(alignment: AlignmentDirectional.center, children: [
+                      SafeArea(
+                        child: Stack(alignment: AlignmentDirectional.center, children: [
                 Row(
                   children: [
                     ItemColumn(Dir.L),
@@ -49,24 +50,25 @@ class _HomeState extends State<Home> {
                   _add(m.itemsOrdered);
                   var count = items.length;
                   return Draggable(
-                      onDragEnd: (end) {
-                        m.reset();
-                      },
-//                      data: m.lastSelected,
-                      child: FloatingActionButton(
-                        child: count == 0 ? null : Text('$count'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OrderW(items)),
-                          );
+                        onDragEnd: (end) {
+                          m.reset();
                         },
-                      ),
-                      feedback: FloatingActionButton(onPressed: () {}),
-                      childWhenDragging: Opacity(opacity: 0));
+//                      data: m.lastSelected,
+                        child: FloatingActionButton(
+                          child: count == 0 ? null : Text('$count'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => OrderW(items)),
+                            );
+                          },
+                        ),
+                        feedback: FloatingActionButton(onPressed: () {}),
+                        childWhenDragging: Opacity(opacity: 0));
                 })
-              ])));
+              ]),
+                      )));
         } else {
           return Container();
         }
@@ -82,32 +84,34 @@ class ItemWgt extends StatelessWidget {
   @override
   build(ctx) => Expanded(
       flex: 1,
-      child: Container(
-          child: Center(
-              child: ScopedModelDescendant<ListModel>(builder: (_, c, m) {
-            return DragTarget(
-              builder: (ctx, ac, re) {
-                return Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(i.name,
-                        style: Theme.of(ctx).textTheme.headline.copyWith(
-                            color: ac.isEmpty ? Colors.black : Colors.white)));
-              },
-              onWillAccept: (data) {
-                m.update(i, dir);
-                HapticFeedback.mediumImpact();
-                print("Selected ${i.name}");
-                return true;
-              },
-              onAccept: (data) {
-                m.accept();
-              },
-              onLeave: (data) {
-                m.accept();
-              },
-            );
-          })),
-          color: Color(i.colour)));
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+          return DragTarget(
+        builder: (ctx, ac, re) {
+          return Card(
+            child: Center(
+              child: Text(i.name,
+                  style: Theme.of(ctx).textTheme.headline.copyWith(
+                      color: ac.isEmpty ? Colors.black : Colors.white)),
+            ),
+              color: Color(i.colour));
+        },
+        onWillAccept: (data) {
+          m.update(i, dir);
+          HapticFeedback.mediumImpact();
+          print("Selected ${i.name}");
+          return true;
+        },
+        onAccept: (data) {
+          m.accept();
+        },
+        onLeave: (data) {
+          m.accept();
+        },
+          );
+        }),
+      ));
 }
 
 enum Dir { L, R }
