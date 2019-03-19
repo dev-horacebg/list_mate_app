@@ -8,10 +8,11 @@ class Menu {
   }
 }
 class Item {
-  var name; int colour; var items;
+  var name, items; int colour, depth;
   Item.from(json) {
     name = json['name'];
-    colour = json['colour'] != null ? int.parse('${json['colour']}') : 0x000000;
+    colour = int.parse('${json['colour']}');
+    depth = json['depth'];
     if (json['items'] != null) {
       items = [];
       json['items'].forEach((v) => items.add(Item.from(v)));

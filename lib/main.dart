@@ -9,13 +9,11 @@ import 'package:scoped_model/scoped_model.dart';
 main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  @override
-  build(ctx) => MaterialApp(home: Home());
+  @override build(ctx) => MaterialApp(home: Home());
 }
 
 class Home extends StatefulWidget {
-  @override
-  createState() => _HomeState();
+  @override createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -27,48 +25,42 @@ class _HomeState extends State<Home> {
     }
   }
 
-  @override
-  build(ctx) => FutureBuilder(
+  @override build(ctx) => FutureBuilder(
       future: rootBundle.loadString('assets/d.json'),
       builder: (cx, snp) {
         if (snp.connectionState == ConnectionState.done) {
           var model = ListModel();
           model.init(Menu.from(json.decode(snp.data)));
           return ScopedModel<ListModel>(
-              model: model,
-              child: Scaffold(
-                  body:
-                      SafeArea(
-                        child: Stack(alignment: AlignmentDirectional.center, children: [
-                Row(
-                  children: [
-                    ItemColumn(Dir.L),
-                    ItemColumn(Dir.R),
-                  ],
-                ),
-                ScopedModelDescendant<ListModel>(builder: (_, c, m) {
-                  _add(m.itemsOrdered);
-                  var count = items.length;
-                  return Draggable(
-                        onDragEnd: (end) {
-                          m.reset();
-                        },
-//                      data: m.lastSelected,
-                        child: FloatingActionButton(
-                          child: count == 0 ? null : Text('$count'),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => OrderW(items)),
-                            );
-                          },
-                        ),
-                        feedback: FloatingActionButton(onPressed: () {}),
-                        childWhenDragging: Opacity(opacity: 0));
-                })
-              ]),
-                      )));
+            model: model,
+            child: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return SafeArea(
+                    child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: [
+                          Row(
+                            children: [
+                              ItemColumn(Dir.L),
+                              ItemColumn(Dir.R),
+                            ],
+                          ),
+                          ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+                            _add(m.itemsOrdered);
+                            var count = items.length;
+                            return Draggable(
+                                onDragEnd: (end) {
+                                  m.reset();
+                                },
+                                child: FloatingActionButton(
+                                  child: count == 0 ? null : Text('$count'),
+                                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OrderW(items)))
+                                ),
+                                feedback:
+                                    FloatingActionButton(onPressed: () {}),
+                                childWhenDragging: Opacity(opacity: 0));
+                          })]));})));
         } else {
           return Container();
         }
@@ -88,27 +80,27 @@ class ItemWgt extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: ScopedModelDescendant<ListModel>(builder: (_, c, m) {
           return DragTarget(
-        builder: (ctx, ac, re) {
-          return Card(
-            child: Center(
-              child: Text(i.name,
-                  style: Theme.of(ctx).textTheme.headline.copyWith(
-                      color: ac.isEmpty ? Colors.black : Colors.white)),
-            ),
-              color: Color(i.colour));
-        },
-        onWillAccept: (data) {
-          m.update(i, dir);
-          HapticFeedback.mediumImpact();
-          print("Selected ${i.name}");
-          return true;
-        },
-        onAccept: (data) {
-          m.accept();
-        },
-        onLeave: (data) {
-          m.accept();
-        },
+            builder: (ctx, ac, re) {
+              return Transform.scale(
+                scale: ac.isEmpty ? 1 : 1.2,
+                child: Card(
+                    child: Center(
+                      child: Text(i.name,
+                          style: Theme.of(ctx).textTheme.headline.copyWith(
+                              color: ac.isEmpty ? Colors.black : Colors.white)),
+                    ),
+                    color: Color(i.colour)),
+              );
+            },
+            onWillAccept: (data) {
+              m.update(i, dir);
+              HapticFeedback.mediumImpact();
+              print("Selected ${i.name}");
+              return true;
+            },
+            onAccept: (data) {
+              m.accept();
+            }
           );
         }),
       ));
@@ -135,9 +127,9 @@ class ItemColumn extends StatelessWidget {
 }
 
 class ListModel extends Model {
-  var defLeft, defRight, left, right, lastSelected;
-  var order = LinkedHashSet();
+  var defLeft, defRight, left, right;
   var itemsOrdered = [];
+  var currentOrder = LinkedHashMap();
 
   init(menu) {
     left = defLeft = [menu.items[0], menu.items[1]];
@@ -145,8 +137,7 @@ class ListModel extends Model {
   }
 
   update(selected, dir) {
-    lastSelected = selected;
-    order.add(selected.name);
+    currentOrder[selected.depth] = selected.name;
     var items = selected.items;
     if (items != null) {
       if (dir == Dir.L) {
@@ -169,13 +160,13 @@ class ListModel extends Model {
   }
 
   accept() {
-    if (order.isNotEmpty && order.length > 1) {
-      String list = order.toList().sublist(1, order.length).join(", ");
+    if (currentOrder.isNotEmpty && currentOrder.length > 1) {
 
+      String list = currentOrder.values.toList().sublist(1, currentOrder.length).join(", ");
       itemsOrdered.add(list);
 
-      order = LinkedHashSet();
-      print(itemsOrdered);
+      currentOrder = LinkedHashMap();
+      print('Item to be added: $list');
     }
   }
 
