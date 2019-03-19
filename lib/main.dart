@@ -50,9 +50,7 @@ class _HomeState extends State<Home> {
                             _add(m.itemsOrdered);
                             var count = items.length;
                             return Draggable(
-                                onDragEnd: (end) {
-                                  m.reset();
-                                },
+                                onDragEnd: (end) => m.reset(),
                                 child: FloatingActionButton(
                                   child: count == 0 ? null : Text('$count'),
                                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OrderW(items)))
@@ -73,37 +71,20 @@ class ItemWgt extends StatelessWidget {
 
   ItemWgt(this.i, this.dir);
 
-  @override
-  build(ctx) => Expanded(
+  @override build(ctx) => Expanded(
       flex: 1,
       child: Padding(
         padding: EdgeInsets.all(16),
-        child: ScopedModelDescendant<ListModel>(builder: (_, c, m) {
-          return DragTarget(
-            builder: (ctx, ac, re) {
-              return Transform.scale(
-                scale: ac.isEmpty ? 1 : 1.2,
-                child: Card(
-                    child: Center(
-                      child: Text(i.name,
-                          style: Theme.of(ctx).textTheme.headline.copyWith(
-                              color: ac.isEmpty ? Colors.black : Colors.white)),
-                    ),
-                    color: Color(i.colour)),
-              );
-            },
-            onWillAccept: (data) {
+        child: ScopedModelDescendant<ListModel>(builder: (_, c, m) => DragTarget(builder: (ctx, ac, re) => Card(
+                  child: Center(child: Text(i.name, style: Theme.of(ctx).textTheme.headline.copyWith(color: ac.isEmpty ? Colors.black : Colors.white))),
+                  color: Color(i.colour)),
+            onWillAccept: (d) {
               m.update(i, dir);
               HapticFeedback.mediumImpact();
-              print("Selected ${i.name}");
               return true;
             },
-            onAccept: (data) {
-              m.accept();
-            }
-          );
-        }),
-      ));
+            onAccept: (d) => m.accept()
+          ))));
 }
 
 enum Dir { L, R }
@@ -113,15 +94,12 @@ class ItemColumn extends StatelessWidget {
 
   ItemColumn(this.d);
 
-  @override
-  build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+  @override build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
         var items = m.get(d);
         return Expanded(
           flex: 1,
           child: Column(
-              children: List.generate(items.length, (i) {
-            return ItemWgt(items[i], d);
-          })),
+              children: List.generate(items.length, (i) => ItemWgt(items[i], d))),
         );
       });
 }
@@ -161,12 +139,8 @@ class ListModel extends Model {
 
   accept() {
     if (currentOrder.isNotEmpty && currentOrder.length > 1) {
-
-      String list = currentOrder.values.toList().sublist(1, currentOrder.length).join(", ");
-      itemsOrdered.add(list);
-
+      itemsOrdered.add(currentOrder.values.toList().sublist(1, currentOrder.length).join(", "));
       currentOrder = LinkedHashMap();
-      print('Item to be added: $list');
     }
   }
 
@@ -178,14 +152,7 @@ class OrderW extends StatelessWidget {
 
   OrderW(this.items);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  @override build(context) => Scaffold(
         appBar: AppBar(title: Text('My stuff')),
-        body: ListView(
-            shrinkWrap: true,
-            children: List.generate(items.length, (x) {
-              return Text(items[x].toString());
-            })));
-  }
+        body: ListView(shrinkWrap: true, children: List.generate(items.length, (x) => Text(items[x].toString()))));
 }
