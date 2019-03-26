@@ -19,7 +19,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   var items = [];
 
-  _add(List order) {
+  _add(order) {
     if (order.isNotEmpty) {
       items.add(order);
     }
@@ -35,8 +35,7 @@ class _HomeState extends State<Home> {
             model: model,
             child: Scaffold(
               body: Builder(
-                builder: (context) {
-                  return SafeArea(
+                builder: (context) => SafeArea(
                     child: Stack(
                         alignment: AlignmentDirectional.center,
                         children: [
@@ -44,7 +43,7 @@ class _HomeState extends State<Home> {
                             children: [
                               ItemColumn(Dir.L),
                               ItemColumn(Dir.R),
-                            ],
+                            ]
                           ),
                           ScopedModelDescendant<ListModel>(builder: (_, c, m) {
                             _add(m.itemsOrdered);
@@ -58,7 +57,7 @@ class _HomeState extends State<Home> {
                                 feedback:
                                     FloatingActionButton(onPressed: () {}),
                                 childWhenDragging: Opacity(opacity: 0));
-                          })]));})));
+                          })])))));
         } else {
           return Container();
         }
@@ -96,11 +95,7 @@ class ItemColumn extends StatelessWidget {
 
   @override build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
         var items = m.get(d);
-        return Expanded(
-          flex: 1,
-          child: Column(
-              children: List.generate(items.length, (i) => ItemWgt(items[i], d))),
-        );
+        return Expanded(flex: 1, child: Column(children: List.generate(items.length, (i) => ItemWgt(items[i], d))));
       });
 }
 
@@ -148,11 +143,11 @@ class ListModel extends Model {
 }
 
 class OrderW extends StatelessWidget {
-  var items;
+  final List items;
 
   OrderW(this.items);
 
   @override build(context) => Scaffold(
-        appBar: AppBar(title: Text('My stuff')),
-        body: ListView(shrinkWrap: true, children: List.generate(items.length, (x) => Text(items[x].toString()))));
+        appBar: AppBar(title: Text('List')),
+        body: ListView(shrinkWrap: true, children: List.generate(items.length, (x) => ListTile(leading: Image.asset('assets/coffee.png'),title: Text(items[x].toString())))));
 }
