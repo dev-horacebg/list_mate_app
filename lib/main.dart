@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
                             return Draggable(
                                 onDragEnd: (end) => m.reset(),
                                 child: FloatingActionButton(
-                                  child: count == 0 ? null : Text('$count'),
+                                  child: count == 0 ? null : Text('$count', style: TextStyle(fontSize: 20)),
                                   onPressed: () => Navigator.push(cx, MaterialPageRoute(builder: (cx) => OrderW( m.itemsOrdered)))
                                 ),
                                 feedback:
