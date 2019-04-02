@@ -14,6 +14,12 @@ I've chosen drinks to demonstrate this concept:
 
 [scoped_model](https://pub.dartlang.org/packages/scoped_model)
 
+## Screenshots
+
+<img src="https://user-images.githubusercontent.com/40957572/55440706-7b1ae800-55a0-11e9-9fae-b783f09e7184.png" width="35%">
+
+<img src="https://user-images.githubusercontent.com/40957572/55440705-7b1ae800-55a0-11e9-996f-9b09bb0322ac.png" width="35%">
+
 ## Developer
 
 [Horace Bell-Gam](https://www.linkedin.com/in/horace-bell-gam-32597222/)
