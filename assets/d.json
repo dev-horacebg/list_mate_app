@@ -2,145 +2,178 @@
   "items": [
     {
       "name": "Coffee",
-      "colour": "0xFF89ECDA",
+      "colour": "0xFFCC4A14",
+      "depth": 0,
       "items": [
         {
           "name": "Americano",
           "colour": "0xFFEA7667",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Latte",
-          "colour": "0xFF4D4D4D",
+          "colour": "0xFFF4D9CB",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             },
             {
               "name": "Vanilla",
-              "colour": "0xFF112233"
+              "colour": "0xFFFCF9F0",
+              "depth": 2
             },
             {
               "name": "Gingerbread",
-              "colour": "0xFF123221"
+              "colour": "0xFFDE8909",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Filter",
-          "colour": "0xFF989787",
+          "colour": "0xFF992526",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Mocha",
-          "colour": "0xFF747213",
+          "colour": "0xFFDEAD99",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             },
             {
               "name": "Vanilla",
-              "colour": "0xFF112233"
+              "colour": "0xFFFCF9F0",
+              "depth": 2
             },
             {
               "name": "Extra Chocolate",
-              "colour": "0xFF951236"
+              "colour": "0xFF223232",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Espresso",
-          "colour": "0xFF963666",
+          "colour": "0xFF792906",
+          "depth": 1,
           "items": [
             {
               "name": "Double shot",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Cappuccino",
           "colour": "0xFFD8A470",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             }
           ]
         }
@@ -148,121 +181,99 @@
     },
     {
       "name": "Tea",
-      "colour": "0xFF00695C",
+      "colour": "0xFF14ADCC",
+      "depth": 0,
       "items": [
         {
-          "name": "English Breakfast",
-          "colour": "0xFF989998",
+          "name": "Breakfast Tea",
+          "colour": "0xFFF9BE01",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Earl Grey",
           "colour": "0xFFE0E0E0",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Lemon",
-              "colour": "0xFFFFF44F"
+              "colour": "0xFFFFF44F",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Green Tea",
-          "colour": "0xFF4d4d56",
+          "colour": "0xFFD0F0C0",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Lemon",
-              "colour": "0xFFFFF44F"
+              "colour": "0xFFFFF44F",
+              "depth": 2
             }
           ]
         },
         {
-          "name": "Peppermint",
+          "name": "Peppermint Tea",
           "colour": "0xFF98FF98",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Sugar",
-              "colour": "0xFF444555"
+              "colour": "0xFFFE4365",
+              "depth": 2
             },
             {
               "name": "Lemon",
-              "colour": "0xFFFFF44F"
-            }
-          ]
-        },
-        {
-          "name": "Honey and Lemon",
-          "colour": "0xFFA98307",
-          "items": [
-            {
-              "name": "Go Large",
-              "colour": "0xFF852828"
-            },
-            {
-              "name": "Sugar",
-              "colour": "0xFF444555"
-            },
-            {
-              "name": "Lemon",
-              "colour": "0xFFFFF44F"
-            },
-            {
-              "name": "Lime",
-              "colour": "0xFF32CD32"
-            }
-          ]
-        },
-        {
-          "name": "Assam",
-          "colour": "0xFFF50057",
-          "items": [
-            {
-              "name": "Go Large",
-              "colour": "0xFF852828"
-            },
-            {
-              "name": "Sugar",
-              "colour": "0xFF444555"
-            },
-            {
-              "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFFF44F",
+              "depth": 2
             }
           ]
         }
@@ -271,86 +282,91 @@
     {
       "name": "Hot drinks",
       "colour": "0xFFDFDFDF",
+      "depth": 0,
       "items": [
         {
           "name": "Hot Chocolate",
           "colour": "0xFF5D4037",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Marshmallow",
-              "colour": "0xFFF9F5EC"
+              "colour": "0xFFF9F5EC",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             }
           ]
         },
         {
-          "name": "White Hot Chocolate",
-          "colour": "0xFFFFFDE7",
+          "name": "White Hot Choc",
+          "colour": "0xFFFF9119",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Marshmallow",
-              "colour": "0xFFF9F5EC"
+              "colour": "0xFFF9F5EC",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             },
             {
               "name": "Mocha Sauce",
-              "colour": "0xFF555443"
-            },
-            {
-              "name": "Cherry syrup",
-              "colour": "0xFF996598"
-            },
-            {
-              "name": "Pumpkin spice",
-              "colour": "0xFF774123"
-            },
-            {
-              "name": "Marshmallow",
-              "colour": "0xFFF9F5EC"
+              "colour": "0xFF555443",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Hot milk",
-          "colour": "0xFFDDDDDD",
+          "colour": "0xFFE0BAA2",
+          "depth": 1,
           "items": [
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             },
             {
               "name": "Vanilla Syrup",
-              "colour": "0xFF777665"
+              "colour": "0xFF777665",
+              "depth": 2
             },
             {
               "name": "Marshmallow",
-              "colour": "0xFFF9F5EC"
+              "colour": "0xFFF9F5EC",
+              "depth": 2
             }
           ]
         }
@@ -358,95 +374,116 @@
     },
     {
       "name": "Other drinks",
-      "colour": "0xFFEA0B8C",
+      "colour": "0xFFCC1D14",
+      "depth": 0,
       "items": [
         {
           "name": "Cola",
           "colour": "0xFFF40000",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Ginger beer",
-          "colour": "0xFF345641",
+          "colour": "0xFFDE8909",
+          "depth": 1,
           "items": [
             {
               "name": "Lemon",
-              "colour": "0xFFFFF44F"
+              "colour": "0xFFFFF44F",
+              "depth": 2
             },
             {
               "name": "Lime",
-              "colour": "0xFF32CD32"
+              "colour": "0xFF32CD32",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Apple Juice",
           "colour": "0xFF8DB600",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             }
           ]
         },
         {
           "name": "Banana milkshake",
           "colour": "0xFFFFE7BA",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             },
             {
-              "name": "Chocolate chips",
-              "colour": "0xFF223232"
+              "name": "Choc chips",
+              "colour": "0xFFA35C3D",
+              "depth": 2
             },
             {
               "name": "Extra Banana",
-              "colour": "0xFF954789"
+              "colour": "0xFFF6CF41",
+              "depth": 2
             },
             {
               "name": "Ice cream",
-              "colour": "0xFF464646"
+              "colour": "0xFF464646",
+              "depth": 2
             }
           ]
         },
         {
-          "name": "Chocolate milkshake",
+          "name": "Choc milkshake",
           "colour": "0xFF8D6E63",
+          "depth": 1,
           "items": [
             {
               "name": "Go Large",
-              "colour": "0xFF852828"
+              "colour": "0xFF963666",
+              "depth": 2
             },
             {
               "name": "Regular Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFFEF7E1",
+              "depth": 2
             },
             {
               "name": "Almond Milk",
-              "colour": "0xFFDDDDDD"
+              "colour": "0xFFE0BAA2",
+              "depth": 2
             },
             {
-              "name": "Chocolate chips",
-              "colour": "0xFF223232"
+              "name": "Choc chips",
+              "colour": "0xFFA35C3D",
+              "depth": 2
             },
             {
               "name": "Ice cream",
-              "colour": "0xFF464646"
+              "colour": "0xFFFCF9F0",
+              "depth": 2
             }
           ]
         }

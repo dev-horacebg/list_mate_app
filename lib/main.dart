@@ -3,12 +3,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:list_mate/data.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 main() => runApp(MyApp());
+
 class MyApp extends StatelessWidget {
-  @override build(ctx) => MaterialApp(home: Home());
+  @override build(ctx) => MaterialApp(home: Home(), theme: ThemeData(fontFamily: 'Montserrat'));
 }
 
 class Home extends StatefulWidget {
@@ -16,6 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   @override build(ctx) => FutureBuilder(
       future: rootBundle.loadString('assets/d.json'),
       builder: (cx, snp) {
@@ -23,36 +24,31 @@ class _HomeState extends State<Home> {
           var model = ListModel();
           model.init(Menu.from(json.decode(snp.data)));
           return ScopedModel<ListModel>(
-              model: model,
-              child: Scaffold(
-                  body:
-                      Stack(alignment: AlignmentDirectional.center, children: [
-                Row(
-                  children: [
-                    ItemColumn(Dir.L),
-                    ItemColumn(Dir.R),
-                  ],
-                ),
-                ScopedModelDescendant<ListModel>(builder: (_, c, m) {
-                  var count = m.count();
-                  return Draggable(
-                      onDragEnd: (end) {
-                        m.reset();
-                      },
-//                      data: m.lastSelected,
-                      child: FloatingActionButton(
-                          child: count == 0 ? null : Text('$count'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => OrderW(m.order)),
-                          );
-                        },),
-                      feedback: FloatingActionButton(
-                          onPressed: () {}),
-                      childWhenDragging: Opacity(opacity: 0));
-                })
-              ])));
+            model: model,
+            child: Scaffold(
+              body: Builder(
+                builder: (context) => SafeArea(
+                    child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: [
+                          Row(
+                            children: [
+                              ItemColumn(Dir.L),
+                              ItemColumn(Dir.R),
+                            ]
+                          ),
+                          ScopedModelDescendant<ListModel>(builder: (_, c, m) {
+                            var count = m.count();
+                            return Draggable(
+                                onDragEnd: (end) => m.reset(),
+                                child: FloatingActionButton(
+                                  child: count == 0 ? null : Text('$count', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                  onPressed: () => Navigator.push(cx, MaterialPageRoute(builder: (cx) => OrderW( m.itemsOrdered)))
+                                ),
+                                feedback:
+                                    FloatingActionButton(onPressed: () {}),
+                                childWhenDragging: Opacity(opacity: 0));
+                          })])))));
         } else {
           return Container();
         }
@@ -67,59 +63,44 @@ class ItemWgt extends StatelessWidget {
 
   @override build(ctx) => Expanded(
       flex: 1,
-      child: Container(
-          child: Center(child: ScopedModelDescendant<ListModel>(
-            builder: (_, c, m) {
-              return DragTarget(
-                builder: (ctx, ac, re) {
-                  return Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(i.name,
-                          style: Theme.of(ctx).textTheme.headline.copyWith(
-                              color: ac.isEmpty
-                                  ? Colors.black
-                                  : Colors.white)));
-                },
-                onWillAccept: (data) {
-                    m.update(i, dir);
-                    HapticFeedback.mediumImpact();
-                    print("Selected ${i.name}");
-                  return true;
-                },
-                onAccept: (data) {
-                  m.accept();
-                },
-                onLeave: (data) {
-                  m.accept();
-              },
-              );
-            }
-          )),
-          color: Color(i.colour)));
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: ScopedModelDescendant<ListModel>(builder: (_, c, m) => DragTarget(builder: (ctx, ac, re) => Card(
+                  child: Center(child: Text(i.name, style: Theme.of(ctx).textTheme.headline.copyWith(color: ac.isEmpty ? Colors.black : Colors.white))),
+                  color: Color(i.colour)),
+            onWillAccept: (d) {
+              m.update(i, dir);
+              HapticFeedback.mediumImpact();
+              return true;
+            },
+            onAccept: (d) => m.accept()
+          ))));
 }
 
-enum Dir{L,R}
+enum Dir { L, R }
 
 class ItemColumn extends StatelessWidget {
   final Dir d;
   ItemColumn(this.d);
+
   @override build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
         var items = m.get(d);
-        return Expanded(
-          flex: 1,
-          child: Column(
-              children: List.generate(items.length, (i) {
-            return ItemWgt(items[i], d);
-          })),
-        );
+        return Expanded(flex: 1, child: Column(children: List.generate(items.length, (i) => ItemWgt(items[i], d))));
       });
 }
 
+class OrderW extends StatelessWidget {
+  final List items;
+  OrderW(this.items);
+
+  @override build(context) => Scaffold(
+            appBar: AppBar(title: Text('List')),
+            body: ListView(shrinkWrap: true, children: List.generate(items.length, (x) => ListTile(leading: Image.asset('assets/coffee.png'),title: Text(items[x])))));
+}
+
 class ListModel extends Model {
-  var defLeft, defRight, left, right, lastSelected, currentFloor = 0;
-  var order = LinkedHashSet();
-  var itemsOrdered = [];
-  var iOrdered = [];
+  var defLeft, defRight, left, right, itemsOrdered = [];
+  var currentOrder = LinkedHashMap();
 
   init(menu) {
     left = defLeft = [menu.items[0], menu.items[1]];
@@ -127,21 +108,18 @@ class ListModel extends Model {
   }
 
   update(selected, dir) {
-//    if (selected != lastSelected) {
-      lastSelected = selected;
-      order.add(selected.name);
-      var items = selected.items;
-      if (items != null) {
-        if (dir == Dir.L) {
-          right = items;
-          left = [selected];
-        } else {
-          left = items;
-          right = [selected];
-        }
+    currentOrder[selected.depth] = selected.name;
+    var items = selected.items;
+    if (items != null) {
+      if (dir == Dir.L) {
+        right = items;
+        left = [selected];
+      } else {
+        left = items;
+        right = [selected];
       }
-      notifyListeners();
-//    }
+    }
+    notifyListeners();
   }
 
   get(dir) => dir == Dir.L ? left : right;
@@ -153,34 +131,34 @@ class ListModel extends Model {
   }
 
   accept() {
-    if (order.isNotEmpty && order.length > 1) {
-      String list = order.toList().sublist(1, order.length).join(", ");
-
-      itemsOrdered.add(list);
-
-      order = LinkedHashSet();
-      print(itemsOrdered);
+    if (currentOrder.isNotEmpty && currentOrder.length > 1) {
+      itemsOrdered.add(currentOrder.values.toList().sublist(1, currentOrder.length).join(", "));
+      currentOrder = LinkedHashMap();
+      notifyListeners();
     }
   }
 
   count() => itemsOrdered.length;
 }
 
-class OrderW extends StatelessWidget {
-
-  final LinkedHashSet items;
-
-  OrderW(this.items);
-
-  @override
-  Widget build(BuildContext context) {
-    var keys = items.toList();
-    return Scaffold(
-      appBar: AppBar(title: Text('My stuff')),
-      body: ListView(
-          shrinkWrap: true,
-          children: List.generate(items.length, (x) {
-            return Text(keys[x]);
-          })));
+class Menu {
+  var items;
+  Menu.from(json) {
+    if (json['items'] != null) {
+      items = [];
+      json['items'].forEach((v) => items.add(Item.from(v)));
+    }
+  }
+}
+class Item {
+  var name, items; int colour, depth;
+  Item.from(json) {
+    name = json['name'];
+    colour = int.parse('${json['colour']}');
+    depth = json['depth'];
+    if (json['items'] != null) {
+      items = [];
+      json['items'].forEach((v) => items.add(Item.from(v)));
+    }
   }
 }
