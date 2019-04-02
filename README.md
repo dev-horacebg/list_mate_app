@@ -14,6 +14,10 @@ I've chosen drinks to demonstrate this concept:
 
 [scoped_model](https://pub.dartlang.org/packages/scoped_model)
 
+## Fonts used
+
+[Montserrat](https://fonts.google.com/specimen/Montserrat?selection.family=Montserrat)
+
 ## Screenshots
 
 <img src="https://user-images.githubusercontent.com/40957572/55440706-7b1ae800-55a0-11e9-9fae-b783f09e7184.png" width="35%">
