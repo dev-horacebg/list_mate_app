@@ -8,7 +8,7 @@ import 'package:scoped_model/scoped_model.dart';
 main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  @override build(ctx) => MaterialApp(home: Home());
+  @override build(ctx) => MaterialApp(home: Home(), theme: ThemeData(fontFamily: 'Montserrat'));
 }
 
 class Home extends StatefulWidget {
@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
                             return Draggable(
                                 onDragEnd: (end) => m.reset(),
                                 child: FloatingActionButton(
-                                  child: count == 0 ? null : Text('$count', style: TextStyle(fontSize: 20)),
+                                  child: count == 0 ? null : Text('$count', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                                   onPressed: () => Navigator.push(cx, MaterialPageRoute(builder: (cx) => OrderW( m.itemsOrdered)))
                                 ),
                                 feedback:
@@ -64,7 +64,7 @@ class ItemWgt extends StatelessWidget {
   @override build(ctx) => Expanded(
       flex: 1,
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(8),
         child: ScopedModelDescendant<ListModel>(builder: (_, c, m) => DragTarget(builder: (ctx, ac, re) => Card(
                   child: Center(child: Text(i.name, style: Theme.of(ctx).textTheme.headline.copyWith(color: ac.isEmpty ? Colors.black : Colors.white))),
                   color: Color(i.colour)),
