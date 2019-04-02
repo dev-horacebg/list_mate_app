@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:list_mate/data.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 main() => runApp(MyApp());
@@ -17,13 +16,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var items = [];
-
-  _add(order) {
-    if (order.isNotEmpty) {
-      items.add(order);
-    }
-  }
 
   @override build(ctx) => FutureBuilder(
       future: rootBundle.loadString('assets/d.json'),
@@ -46,13 +38,12 @@ class _HomeState extends State<Home> {
                             ]
                           ),
                           ScopedModelDescendant<ListModel>(builder: (_, c, m) {
-                            _add(m.itemsOrdered);
-                            var count = items.length;
+                            var count = m.count();
                             return Draggable(
                                 onDragEnd: (end) => m.reset(),
                                 child: FloatingActionButton(
                                   child: count == 0 ? null : Text('$count'),
-                                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => OrderW(items)))
+                                  onPressed: () => Navigator.push(cx, MaterialPageRoute(builder: (cx) => OrderW( m.itemsOrdered)))
                                 ),
                                 feedback:
                                     FloatingActionButton(onPressed: () {}),
@@ -90,7 +81,6 @@ enum Dir { L, R }
 
 class ItemColumn extends StatelessWidget {
   final Dir d;
-
   ItemColumn(this.d);
 
   @override build(ctx) => ScopedModelDescendant<ListModel>(builder: (_, c, m) {
@@ -99,9 +89,17 @@ class ItemColumn extends StatelessWidget {
       });
 }
 
+class OrderW extends StatelessWidget {
+  final List items;
+  OrderW(this.items);
+
+  @override build(context) => Scaffold(
+            appBar: AppBar(title: Text('List')),
+            body: ListView(shrinkWrap: true, children: List.generate(items.length, (x) => ListTile(leading: Image.asset('assets/coffee.png'),title: Text(items[x])))));
+}
+
 class ListModel extends Model {
-  var defLeft, defRight, left, right;
-  var itemsOrdered = [];
+  var defLeft, defRight, left, right, itemsOrdered = [];
   var currentOrder = LinkedHashMap();
 
   init(menu) {
@@ -136,18 +134,31 @@ class ListModel extends Model {
     if (currentOrder.isNotEmpty && currentOrder.length > 1) {
       itemsOrdered.add(currentOrder.values.toList().sublist(1, currentOrder.length).join(", "));
       currentOrder = LinkedHashMap();
+      notifyListeners();
     }
   }
 
   count() => itemsOrdered.length;
 }
 
-class OrderW extends StatelessWidget {
-  final List items;
-
-  OrderW(this.items);
-
-  @override build(context) => Scaffold(
-        appBar: AppBar(title: Text('List')),
-        body: ListView(shrinkWrap: true, children: List.generate(items.length, (x) => ListTile(leading: Image.asset('assets/coffee.png'),title: Text(items[x].toString())))));
+class Menu {
+  var items;
+  Menu.from(json) {
+    if (json['items'] != null) {
+      items = [];
+      json['items'].forEach((v) => items.add(Item.from(v)));
+    }
+  }
+}
+class Item {
+  var name, items; int colour, depth;
+  Item.from(json) {
+    name = json['name'];
+    colour = int.parse('${json['colour']}');
+    depth = json['depth'];
+    if (json['items'] != null) {
+      items = [];
+      json['items'].forEach((v) => items.add(Item.from(v)));
+    }
+  }
 }
